@@ -23,6 +23,12 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+// CREATES A POST ROUTE TO urls_new
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // Log the POST request body to the console
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+});
+
 // CREATES A GET ROUTE TO urls_show
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
@@ -36,3 +42,15 @@ app.listen(PORT, () => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
+
+const generateRandomString = () => {
+  const randomNum = 6;
+  const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let randomString = "";
+
+  for (let i = 0; i < randomNum; i++) {
+    randomString += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  return randomString;
+};
