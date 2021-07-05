@@ -25,7 +25,8 @@ app.get("/urls/new", (req, res) => {
 
 // CREATES A POST ROUTE TO urls_new
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
+  urlDatabase[generateRandomString()] = req.body.longURL;
+  console.log(urlDatabase);  // Log the POST request body to the console
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
