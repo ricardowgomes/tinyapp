@@ -50,6 +50,11 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
+});
+
 const generateRandomString = () => {
   const randomNum = 6;
   const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
