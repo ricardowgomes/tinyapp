@@ -109,19 +109,10 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${randomString}`);
 });
 
-// CREATES A POST ROUTE TO LOGIN
-app.post("/urls/login", (req, res) => {
-  res.cookie("user_id", users.userId);
-  const user = users[req.cookies["user_id"]];
-
-  const templateVars = { urls: urlDatabase, user };
-  res.render("urls_index", templateVars);
-});
-
 // CREATES A POST ROUTE TO LOGOUT
-app.post("/urls/logout", (req, res) => {
+app.post("/logout", (req, res) => {
   res.clearCookie("user_id", users.userId);
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 // CREATES A POST ROUTE TO EDIT
@@ -158,6 +149,29 @@ app.post("/register", (req, res) => {
   };
 
   res.cookie("user_id", userId);
+
+  res.redirect("/urls");
+});
+
+// CREATES A POST ROUTE TO LOGIN
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (!email || !password) {
+    return res.status(400).send('email and password cannot be black');
+  }
+
+  const user = findUserByEmail(email);
+
+  if (!user) {
+    return res.status(400).send('This email doesn\'t exist, please try to register instead');
+  }
+
+  if (user.password !== password) {
+    return res.status(400).send('This password doesn\'t match, please try again');
+  }
+  res.cookie("user_id", user.id);
 
   res.redirect("/urls");
 });
