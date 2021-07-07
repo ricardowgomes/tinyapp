@@ -15,10 +15,10 @@
   <%- include('partials/_header') %>
     <main style="margin: 1em;">
       <div>
-        <form method="POST" action="/register">
+        <form method="POST" action="/login">
           <div style="text-align: center;">
-            <h2>Register</h2>
-            <p>Please fill in this form to create an account.</p>
+            <h2>Login</h2>
+            <p>Please login into your account here.</p>
             <hr>
 
             <div>
@@ -28,16 +28,16 @@
             </div>
 
             <div>
-              <label for="psw"><b>Password</b></label>
+              <label for="password"><b>Password</b></label>
               <input type="password" placeholder="Enter Password" name="password">
             </div>
             <hr>
 
-            <button type="submit" class="btn btn-outline-primary">Register</button>
+            <button type="submit" class="btn btn-outline-primary">Login</button>
           </div>
         </form>
         <div style="text-align: center;">
-          <p>Already have an account? <a href="/urls/login">Sign in</a>.</p>
+          <p>Don't have an account? <a href="/register">Register here</a>.</p>
         </div>
       </div>
     </main>
