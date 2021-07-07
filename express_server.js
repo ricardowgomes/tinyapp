@@ -25,8 +25,23 @@ const generateRandomString = () => {
 };
 
 const urlDatabase = {
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW"
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW"
+  }
+};
+
+const urlDatabaseOld = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+
+const getUrlsFromThisUserId = (id) => {
+
 };
 
 const users = {
@@ -84,19 +99,21 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies.user_id;
 
+
   if (!userId) {
     return res.redirect("/login");
   }
 
   const user = users[req.cookies["user_id"]];
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user };
 
   res.render("urls_show", templateVars);
 });
 
 // CREATES A GET ROUTE TO longURL
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
+
   res.redirect(longURL);
 });
 
@@ -136,7 +153,10 @@ app.listen(PORT, () => {
 // CREATES A POST ROUTE FROM SUBMIT NEW
 app.post("/urls", (req, res) => {
   const randomString = generateRandomString();
-  urlDatabase[randomString] = req.body.longURL;
+  urlDatabase[randomString] = {};
+  urlDatabase[randomString].longURL = req.body.longURL;
+  urlDatabase[randomString].userID = req.cookies.user_id;
+
   res.redirect(`/urls/${randomString}`);
 });
 

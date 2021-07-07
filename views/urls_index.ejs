@@ -37,7 +37,7 @@
                 <%= url %>
               </td>
               <td>
-                <%= urls[url] %>
+                <%= urls[url].longURL %>
               </td>
               <td>
                 <form method="GET" action="/urls/<%= url %>/">
@@ -45,7 +45,7 @@
                 </form>
               </td>
               <td>
-                <form method="POST" action="/urls/<%= url %>/delete">
+                <form method="POST" action="/urls/<%= urls[url].longURL %>/delete">
                   <button type="submit" class="btn btn-outline-danger">Delete</button>
                 </form>
               </td>
