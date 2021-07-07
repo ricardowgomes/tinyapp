@@ -55,7 +55,8 @@ app.listen(PORT, () => {
 // CREATES A POST ROUTE TO LOGIN
 app.post("/urls/login", (req, res) => {
   res.cookie("username", req.body.username);
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const username = req.body.username;
+  const templateVars = { urls: urlDatabase, username };
   console.log(templateVars);
   res.render("urls_index", templateVars);
 });
