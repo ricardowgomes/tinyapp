@@ -18,6 +18,7 @@ const urlDatabase = {
 // CREATES A GET ROUTE TO urls_index
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+
   res.render("urls_index", templateVars);
 });
 
@@ -54,13 +55,16 @@ app.listen(PORT, () => {
 // CREATES A POST ROUTE TO LOGIN
 app.post("/urls/login", (req, res) => {
   res.cookie("username", req.body.username);
-  const username = req.body.username;
-
   const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
-
-  console.log(username);
-  // console.log(usernameCookieParse);
+  console.log(templateVars);
   res.render("urls_index", templateVars);
+});
+
+// CREATES A POST ROUTE TO LOGOUT
+app.post("/urls/logout", (req, res) => {
+  console.log(req.body); // It returns a empty object
+  res.clearCookie("username", req.body.username);
+  res.redirect("/urls");
 });
 
 // CREATES A POST ROUTE TO DELETE
