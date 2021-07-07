@@ -13,13 +13,12 @@
     </div>
 
     <% if (!user) { %>
-      <form method="POST" action="/urls/login">
+      <div class="navbar-nav">
         <div class="navbar-nav">
-          <input name="username" class="form-control" class="form-control" type="text" placeholder="username"
-            aria-label="Recipient's username" aria-describedby="button-addon2" />
-          <button type="submit" class="btn btn-outline-secondary">Login</button>
+          <a class="nav-item nav-link" href="/register">Register</a>
+          <a class="nav-item nav-link" href="/login">Login</a>
         </div>
-      </form>
+      </div>
 
       <% } else { %>
         <form method="POST" action="/urls/logout" class="nav-item">
