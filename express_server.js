@@ -54,6 +54,12 @@ const findUserByEmail = (email) => {
 
 // CREATES A GET ROUTE TO urls_index
 app.get("/urls", (req, res) => {
+  const userId = req.cookies.user_id;
+
+  if (!userId) {
+    return res.redirect("/login");
+  }
+
   const user = users[req.cookies["user_id"]];
   const templateVars = { urls: urlDatabase, user };
 
@@ -62,7 +68,13 @@ app.get("/urls", (req, res) => {
 
 // CREATES A GET ROUTE TO urls_new
 app.get("/urls/new", (req, res) => {
-  const user = users[req.cookies["user_id"]];
+  const userId = req.cookies.user_id;
+
+  if (!userId) {
+    return res.redirect("/login");
+  }
+
+  const user = users[userId];
   const templateVars = { urls: urlDatabase, user };
 
   res.render("urls_new", templateVars);
@@ -70,6 +82,12 @@ app.get("/urls/new", (req, res) => {
 
 // CREATES A GET ROUTE TO urls_show
 app.get("/urls/:shortURL", (req, res) => {
+  const userId = req.cookies.user_id;
+
+  if (!userId) {
+    return res.redirect("/login");
+  }
+
   const user = users[req.cookies["user_id"]];
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user };
 
@@ -84,6 +102,12 @@ app.get("/u/:shortURL", (req, res) => {
 
 // CREATES A GET ROUTE TO REGISTER
 app.get("/register", (req, res) => {
+  const userId = req.cookies.user_id;
+
+  if (userId) {
+    return res.redirect("/urls");
+  }
+
   const user = users[req.cookies["user_id"]];
   const templateVars = { user };
 
@@ -92,7 +116,14 @@ app.get("/register", (req, res) => {
 
 // CREATES A GET ROUTE TO LOGIN
 app.get("/login", (req, res) => {
+  const userId = req.cookies.user_id;
+
+  if (userId) {
+    return res.redirect("/urls");
+  }
+
   const user = users[req.cookies["user_id"]];
+  console.log(user);
   const templateVars = { user };
 
   res.render("login", templateVars);
@@ -111,7 +142,8 @@ app.post("/urls", (req, res) => {
 
 // CREATES A POST ROUTE TO LOGOUT
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id", users.userId);
+  const userId = req.cookies.user_id;
+  res.clearCookie("user_id", userId);
   res.redirect("/login");
 });
 
