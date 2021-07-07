@@ -40,8 +40,15 @@ const urlDatabaseOld = {
   "9sm5xK": "http://www.google.com"
 };
 
-const getUrlsFromThisUserId = (id) => {
+const urlsForUser = (id) => {
+  const longShortUrl = {};
 
+  for (const ids in users) {
+    if (ids.userID === id) {
+      longShortUrl[ids] = users[ids].longURL;
+    }
+  }
+  return longShortUrl;
 };
 
 const users = {
@@ -72,7 +79,11 @@ app.get("/urls", (req, res) => {
   const userId = req.cookies.user_id;
 
   if (!userId) {
-    return res.redirect("/login");
+    const err = res.status(401).statusCode;
+    const msg = 'You are not logged in';
+    const templateVars = { msg, err };
+
+    return res.render("error", templateVars);
   }
 
   const user = users[req.cookies["user_id"]];
@@ -101,7 +112,11 @@ app.get("/urls/:shortURL", (req, res) => {
 
 
   if (!userId) {
-    return res.redirect("/login");
+    const err = res.status(401).statusCode;
+    const msg = 'You are not logged in';
+    const templateVars = { msg, err };
+
+    return res.render("error", templateVars);
   }
 
   const user = users[req.cookies["user_id"]];
@@ -211,13 +226,20 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
 
   if (!email || !password) {
-    return res.status(400).send('email and password cannot be black');
+    const err = res.status(400).statusCode;
+    const msg = 'Email and password cannot be blank';
+    const templateVars = { msg, err };
+    return res.render("error", templateVars);
   }
 
   const user = findUserByEmail(email);
 
   if (!user) {
-    return res.status(400).send('This email doesn\'t exist, please try to register instead');
+    const err = res.status(400).statusCode;
+    const msg = 'This email doesn\'t exist, please try to register instead';
+    const templateVars = { msg, err };
+
+    return res.render("error", templateVars);
   }
 
   if (user.password !== password) {
