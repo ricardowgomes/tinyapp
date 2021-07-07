@@ -40,10 +40,9 @@
                 <%= urls[url] %>
               </td>
               <td>
-                <!-- Change starts here -->
                 <form method="GET" action="/urls/<%= url %>/">
                   <button type="submit" class="btn btn-outline-primary">Edit</button>
-                  <!-- Change ends here -->
+                </form>
               </td>
               <td>
                 <form method="POST" action="/urls/<%= url %>/delete">

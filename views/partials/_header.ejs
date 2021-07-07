@@ -11,5 +11,23 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
+
+    <% if (!username) { %>
+      <form method="POST" action="/urls/login">
+        <div class="input-group mb-3">
+          <input name="username" class="form-control" class="form-control" type="text" placeholder="username"
+            aria-label="Recipient's username" aria-describedby="button-addon2" />
+          <button type="submit" class="btn btn-outline-secondary">Login</button>
+        </div>
+      </form>
+
+      <% } else { %>
+        <form method="POST" action="/urls" class="nav-item">
+          <div class="navbar-nav">
+            <span class="nav-link">Logged in as: <%= username %>!</span>
+            <button type="submit" class="btn btn-outline-secondary">Logout</button>
+          </div>
+        </form>
+        <% } %>
   </nav>
 </header>
