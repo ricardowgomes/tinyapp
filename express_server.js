@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const morgan = require('morgan');
 const bcrypt = require('bcrypt');
+const methodOverride = require('method-override');
 
 // Helper functions >>
 const { findUserByEmail, generateRandomString, urlsForUser } = require('./helpers');
@@ -18,6 +19,14 @@ app.use(cookieSession({
   keys: ['key1', 'key2']
 }));
 app.set('view engine', 'ejs');
+app.use(methodOverride('_method'));
+
+app.use((req, res, next) => {
+  if (req.query._method) {
+    req.method = req.query._method;
+  }
+  next();
+});
 
 const urlDatabase = {
   b6UTxQ: {
@@ -198,7 +207,7 @@ app.post("/logout", (req, res) => {
 });
 
 // CREATES A POST ROUTE TO EDIT
-app.post("/urls/:shortURL/edit", (req, res) => {
+app.put("/urls/:shortURL", (req, res) => {
   const userId = req.session.userId;
 
   if (userId !== urlDatabase[req.params.shortURL].userID) {
@@ -215,7 +224,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 });
 
 // CREATES A POST ROUTE TO DELETE
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL", (req, res) => {
   const userId = req.session.userId;
 
   if (!userId) {
@@ -300,9 +309,6 @@ app.post("/login", (req, res) => {
 
     return res.render("error", templateVars);
   }
-  console.log("password", password);
-  console.log("userpassword", user.password);
-  console.log("compare", bcrypt.compare(password, user.password));
 
   bcrypt.compare(password, user.password)
     .then((result) => {
