@@ -32,20 +32,25 @@ const urlDatabase = {
   i3BoGr: {
     longURL: "https://www.google.ca",
     userID: "aJ48lW"
-  }
-};
+  },
 
-const urlDatabaseOld = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  x3BoGx: {
+    longURL: "https://www.fisher.ca",
+    userID: "userRandomID"
+  },
+
+  x48oGx: {
+    longURL: "https://www.eitapega.ca",
+    userID: "userRandomID"
+  }
 };
 
 const urlsForUser = (id) => {
   const longShortUrl = {};
 
-  for (const ids in users) {
-    if (ids.userID === id) {
-      longShortUrl[ids] = users[ids].longURL;
+  for (const ids in urlDatabase) {
+    if (urlDatabase[ids].userID === id) {
+      longShortUrl[ids] = urlDatabase[ids].longURL;
     }
   }
   return longShortUrl;
@@ -86,8 +91,9 @@ app.get("/urls", (req, res) => {
     return res.render("error", templateVars);
   }
 
+  const urls = urlsForUser(userId);
   const user = users[req.cookies["user_id"]];
-  const templateVars = { urls: urlDatabase, user };
+  const templateVars = { urls, user };
 
   res.render("urls_index", templateVars);
 });
@@ -109,6 +115,7 @@ app.get("/urls/new", (req, res) => {
 // CREATES A GET ROUTE TO urls_show
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies.user_id;
+  const shortURL = req.params.shortURL;
 
 
   if (!userId) {
@@ -119,8 +126,18 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.render("error", templateVars);
   }
 
+  const urlKeys = Object.keys(urlsForUser(userId));
+
+  if (!(urlKeys.includes(shortURL))) {
+    const err = res.status(401).statusCode;
+    const msg = 'This shortURL don\'t belong to your account';
+    const templateVars = { msg, err };
+
+    return res.render("error", templateVars);
+  }
+
   const user = users[req.cookies["user_id"]];
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user };
+  const templateVars = { shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user };
 
   res.render("urls_show", templateVars);
 });
@@ -184,13 +201,33 @@ app.post("/logout", (req, res) => {
 
 // CREATES A POST ROUTE TO EDIT
 app.post("/urls/:shortURL/edit", (req, res) => {
+  const userId = req.cookies.user_id;
+
+  if (userId !== urlDatabase[req.params.shortURL].userID) {
+    const err = res.status(401).statusCode;
+    const msg = 'You are not authorized to do that!';
+    const templateVars = { msg, err };
+
+    return res.render("error", templateVars);
+  }
+
   const newUrl = req.body.editURL;
-  urlDatabase[req.params.shortURL] = newUrl;
+  urlDatabase[req.params.shortURL].longURL = newUrl;
   res.redirect("/urls");
 });
 
 // CREATES A POST ROUTE TO DELETE
 app.post("/urls/:shortURL/delete", (req, res) => {
+  const userId = req.cookies.user_id;
+
+  if (userId !== urlDatabase[req.params.shortURL].userID) {
+    const err = res.status(401).statusCode;
+    const msg = 'You are not authorized to do that!';
+    const templateVars = { msg, err };
+
+    return res.render("error", templateVars);
+  }
+
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
