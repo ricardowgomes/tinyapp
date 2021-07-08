@@ -22,6 +22,7 @@ User also can edit the longURL maintaining the same short URL.
 - body-parser
 - cookie-session
 - morgan
+- method-override
 
 ## Getting Started
 
