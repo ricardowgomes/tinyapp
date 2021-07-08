@@ -3,15 +3,22 @@ const app = express();
 const PORT = 8080; // default port 8080
 
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
+
+// cookieParser was substituted by cookieSession
+// const cookieParser = require('cookie-parser');
+// app.use(cookieParser());
 const morgan = require('morgan');
 
 const bcrypt = require('bcrypt');
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(morgan('dev'));
 
+app.use(morgan('dev'));
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2']
+}));
 app.set('view engine', 'ejs');
 
 const generateRandomString = () => {
@@ -83,7 +90,7 @@ const findUserByEmail = (email) => {
 
 // CREATES A GET ROUTE TO urls_index
 app.get("/urls", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
 
   if (!userId) {
     const err = res.status(401).statusCode;
@@ -94,7 +101,7 @@ app.get("/urls", (req, res) => {
   }
 
   const urls = urlsForUser(userId);
-  const user = users[req.cookies["user_id"]];
+  const user = users[req.session.user_id];
   const templateVars = { urls, user };
 
   res.render("urls_index", templateVars);
@@ -102,7 +109,7 @@ app.get("/urls", (req, res) => {
 
 // CREATES A GET ROUTE TO urls_new
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
 
   if (!userId) {
     return res.redirect("/login");
@@ -116,7 +123,7 @@ app.get("/urls/new", (req, res) => {
 
 // CREATES A GET ROUTE TO urls_show
 app.get("/urls/:shortURL", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
   const shortURL = req.params.shortURL;
 
 
@@ -138,7 +145,7 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.render("error", templateVars);
   }
 
-  const user = users[req.cookies["user_id"]];
+  const user = users[userId];
   const templateVars = { shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user };
 
   res.render("urls_show", templateVars);
@@ -153,13 +160,13 @@ app.get("/u/:shortURL", (req, res) => {
 
 // CREATES A GET ROUTE TO REGISTER
 app.get("/register", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
 
   if (userId) {
     return res.redirect("/urls");
   }
 
-  const user = users[req.cookies["user_id"]];
+  const user = users[userId];
   const templateVars = { user };
 
   res.render("register", templateVars);
@@ -167,13 +174,13 @@ app.get("/register", (req, res) => {
 
 // CREATES A GET ROUTE TO LOGIN
 app.get("/login", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
 
   if (userId) {
     return res.redirect("/urls");
   }
 
-  const user = users[req.cookies["user_id"]];
+  const user = users[req.session.user_id];
   console.log(user);
   const templateVars = { user };
 
@@ -189,21 +196,24 @@ app.post("/urls", (req, res) => {
   const randomString = generateRandomString();
   urlDatabase[randomString] = {};
   urlDatabase[randomString].longURL = req.body.longURL;
-  urlDatabase[randomString].userID = req.cookies.user_id;
+  urlDatabase[randomString].userID = req.session.user_id;
+  console.log("new_post>>", urlDatabase[randomString]);
 
   res.redirect(`/urls/${randomString}`);
 });
 
 // CREATES A POST ROUTE TO LOGOUT
 app.post("/logout", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
   res.clearCookie("user_id", userId);
+  res.clearCookie("session", "");
   res.redirect("/login");
 });
 
 // CREATES A POST ROUTE TO EDIT
 app.post("/urls/:shortURL/edit", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
+  //req.cookies.user_id
 
   if (userId !== urlDatabase[req.params.shortURL].userID) {
     const err = res.status(401).statusCode;
@@ -220,7 +230,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 
 // CREATES A POST ROUTE TO DELETE
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
 
   if (userId !== urlDatabase[req.params.shortURL].userID) {
     const err = res.status(401).statusCode;
@@ -251,9 +261,13 @@ app.post("/register", (req, res) => {
   }
 
   const userId = generateRandomString();
+  // eslint-disable-next-line camelcase
+  req.session.user_id = userId;
+
   users[userId] = {
     id: userId, email, password: hashedPassword
   };
+
 
   res.cookie("user_id", userId);
 
