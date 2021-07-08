@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 
+const bcrypt = require('bcrypt');
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
@@ -236,6 +238,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (!email || !password) {
     return res.status(400).send('email and password cannot be black');
@@ -249,7 +252,7 @@ app.post("/register", (req, res) => {
 
   const userId = generateRandomString();
   users[userId] = {
-    id: userId, email, password
+    id: userId, email, password: hashedPassword
   };
 
   res.cookie("user_id", userId);
@@ -279,7 +282,7 @@ app.post("/login", (req, res) => {
     return res.render("error", templateVars);
   }
 
-  if (user.password !== password) {
+  if (!bcrypt.compareSync(password, user.password)) {
     return res.status(400).send('This password doesn\'t match, please try again');
   }
   res.cookie("user_id", user.id);
