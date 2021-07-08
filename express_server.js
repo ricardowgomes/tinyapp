@@ -21,23 +21,18 @@ app.set('view engine', 'ejs');
 
 const urlDatabase = {
   b6UTxQ: {
-    longURL: "https://www.tsn.ca",
+    longURL: "https://drive.google.com/file/d/1zjH-Vd4hMN0PC1DjWo4iDirSsZ7n-j18/view?usp=sharing",
     userID: "user2RandomID"
   },
   i3BoGr: {
-    longURL: "https://www.google.ca",
+    longURL: "https://www.verylongurlthatyoucertainlyneedtoshorten.ca",
     userID: "user2RandomID"
   },
 
   x3BoGx: {
-    longURL: "https://www.fisher.ca",
+    longURL: "https://drive.google.com/file/d/1zjH-Vd4hMN0PC1DjWo4iDirSsZ7n-j18/view?usp=sharing",
     userID: "userRandomID"
   },
-
-  x48oGx: {
-    longURL: "https://www.eitapega.ca",
-    userID: "userRandomID"
-  }
 };
 
 const users = {
